@@ -1,0 +1,17 @@
+# yaml 配置实例
+version: '3'
+services:
+  web:
+    image: docker.io/acethan/msg_arch
+    volumes:
+    - /conf/config.yaml:/data/xjyk/conf/config.yaml
+    ports:
+      - "8080:8080"
+    links:
+      - mysql
+  mysql:
+    image: mysql:8.0
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: NWVj5IowIGk0dZlBCSF
