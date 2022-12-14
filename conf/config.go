@@ -37,10 +37,8 @@ type AppConfig struct {
 	// URL 整个应用的访问地址（前端入口），用于跳转登录等
 	URL                string `validate:"required,url"`
 	AutoMigration      bool
-	AutoSyncWeWorkData bool // 启动时同步微信数据
-	// SuperAdminPhone 此处手机号对应员工的赋予超级管理员权限
-	SuperAdminPhone []string `validate:"required,dive,phone"`
-	InnerSrvAppCode string   // 内部服务调用key
+	AutoSyncWeWorkData bool   // 启动时同步微信数据
+	InnerSrvAppCode    string // 内部服务调用key
 }
 
 type serverConfig struct {
@@ -149,7 +147,7 @@ func SetupSetting() error {
 	return nil
 }
 
-//SetupTestSetting 初始化单元测试的配置
+// SetupTestSetting 初始化单元测试的配置
 func SetupTestSetting() error {
 	var err error
 	viper.SetConfigName("config.test") // name of config file (without extension)

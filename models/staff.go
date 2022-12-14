@@ -12,10 +12,8 @@ import (
 	"msg/common/log"
 	"msg/common/redis"
 	"msg/common/util"
-	"msg/conf"
 	"msg/constants"
 	"msg/requests"
-	"os"
 	"time"
 )
 
@@ -337,42 +335,4 @@ func (s Staff) UpdateAuthorizedStatus(staffIDs []string) error {
 
 func (s Staff) RemoveOriginalWelcomeMsg(tx *gorm.DB, welcomeMsgId string) error {
 	return tx.Model(&Staff{}).Where("welcome_msg_id = ?", welcomeMsgId).Update("welcome_msg_id", nil).Error
-}
-
-func SetupStaffRole() {
-	tx := DB.Begin()
-	defer tx.Rollback()
-
-	// 清空超级管理员权限
-	err := tx.Model(&Staff{}).Where("role_type = ?", conf.Settings.App.SuperAdminPhone).Updates(&Staff{
-		RoleType: string(constants.RoleTypeStaff),
-		RoleID:   string(constants.DefaultCorpStaffRoleID),
-	}).Error
-	if err != nil {
-		log.TracedError("clean SuperAdmin role failed", errors.WithStack(err))
-		os.Exit(1)
-	}
-
-	// 根据conf里的SuperAdminPhone配置设置超级管理员员工
-	err = tx.Model(&Staff{}).Where("mobile in (?)", conf.Settings.App.SuperAdminPhone).Updates(&Staff{
-		RoleType: string(constants.RoleTypeSuperAdmin),
-		RoleID:   string(constants.DefaultCorpSuperAdminRoleID),
-	}).Error
-	if err != nil {
-		log.TracedError("set SuperAdmin role failed", errors.WithStack(err))
-		os.Exit(1)
-	}
-
-	err = tx.Commit().Error
-	if err != nil {
-		log.TracedError("Commit failed", errors.WithStack(err))
-		os.Exit(1)
-	}
-
-	err = Staff{}.CleanCache(conf.Settings.WeWork.ExtCorpID)
-	if err != nil {
-		log.TracedError("CleanCache failed", errors.WithStack(err))
-		os.Exit(1)
-	}
-
 }
