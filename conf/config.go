@@ -31,19 +31,20 @@ type delayQueueConfig struct {
 }
 
 type AppConfig struct {
-	Name string `validate:"required"`
-	Key  string `validate:"required,base64"` //应用秘钥 64位，生成命令：openssl rand 64 -base64
-	Env  string `validate:"required,oneof=PROD DEV TEST"`
-	// URL 整个应用的访问地址（前端入口），用于跳转登录等
-	URL                string `validate:"required,url"`
+	Name               string `validate:"required"`
+	Key                string `validate:"required,base64"` //应用秘钥 64位，生成命令：openssl rand 64 -base64
+	Env                string `validate:"required,oneof=PROD DEV TEST DEMO"`
 	AutoMigration      bool
-	AutoSyncWeWorkData bool   // 启动时同步微信数据
-	InnerSrvAppCode    string // 内部服务调用key
+	AutoSyncWeWorkData bool // 启动时同步微信数据
+	// SuperAdmin 此处userID对应员工的赋予超级管理员权限
+	SuperAdmin      []string `validate:"required,dive,gt=1"`
+	InnerSrvAppCode string   // 内部服务调用key
 }
 
 type serverConfig struct {
-	RunMode         string        `validate:"required,oneof=debug test release"`
-	HttpPort        int           `validate:"required,gt=0"`
+	RunMode         string `validate:"required,oneof=debug test release"`
+	HttpPort        int    `validate:"required,gt=0"`
+	HttpHost        string
 	ReadTimeout     time.Duration `validate:"required,gt=0"`
 	WriteTimeout    time.Duration `validate:"required,gt=0"`
 	MsgArchHttpPort int
@@ -126,6 +127,7 @@ func SetupSetting() error {
 	viper.AddConfigPath("conf")       // optionally look for config in the working directory
 	viper.AddConfigPath("../conf")    // optionally look for config in the working directory
 	viper.AddConfigPath("../../conf") // optionally look for config in the working directory
+	viper.AddConfigPath("/srv")       // optionally look for config in the working directory
 	err = viper.ReadInConfig()        // Find and read the config file
 	if err != nil {                   // Handle errors reading the config file
 		log.Printf("missing config.yaml : %s\n", err.Error())

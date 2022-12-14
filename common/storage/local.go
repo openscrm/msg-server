@@ -10,7 +10,6 @@ import (
 	"msg/common/ecode"
 	"msg/common/log"
 	"msg/conf"
-	"msg/constants"
 	"net/url"
 	"os"
 	"path"
@@ -60,32 +59,32 @@ func (o LocalStorage) CheckSignedURL(signedURL string, method string, expireAt i
 	return
 }
 
-func (o LocalStorage) SignURL(objectKey string, method constants.HTTPMethod, expiredInSec int64) (signedURL string, err error) {
-	if !IsValidObjectKey(objectKey) {
-		err = errors.WithStack(ecode.InvalidPathError)
-		return
-	}
-
-	fileURL, err := url.Parse(conf.Settings.App.URL)
-	if err != nil {
-		err = errors.Wrap(err, "invalid MainApp URL")
-		return
-	}
-
-	fileURL.Path = path.Join(o.Config.ServerRootPath, objectKey)
-
-	fileURL.RawQuery = fmt.Sprintf("expire_at=%d",
-		time.Now().Unix()+expiredInSec,
-	)
-
-	signData := fmt.Sprintf("path=%s;method=%s;query=%s;sign_key=%s", fileURL.Path, method, fileURL.RawQuery, conf.Settings.App.Key)
-	log.Sugar.Debug("signData", signData)
-	signature := gsha1.Encrypt(signData)
-	fileURL.RawQuery += fmt.Sprintf("&signature=%s", signature)
-	signedURL = fileURL.String()
-
-	return
-}
+//func (o LocalStorage) SignURL(objectKey string, method constants.HTTPMethod, expiredInSec int64) (signedURL string, err error) {
+//	if !IsValidObjectKey(objectKey) {
+//		err = errors.WithStack(ecode.InvalidPathError)
+//		return
+//	}
+//
+//	fileURL, err := url.Parse(conf.Settings.App.URL)
+//	if err != nil {
+//		err = errors.Wrap(err, "invalid MainApp URL")
+//		return
+//	}
+//
+//	fileURL.Path = path.Join(o.Config.ServerRootPath, objectKey)
+//
+//	fileURL.RawQuery = fmt.Sprintf("expire_at=%d",
+//		time.Now().Unix()+expiredInSec,
+//	)
+//
+//	signData := fmt.Sprintf("path=%s;method=%s;query=%s;sign_key=%s", fileURL.Path, method, fileURL.RawQuery, conf.Settings.App.Key)
+//	log.Sugar.Debug("signData", signData)
+//	signature := gsha1.Encrypt(signData)
+//	fileURL.RawQuery += fmt.Sprintf("&signature=%s", signature)
+//	signedURL = fileURL.String()
+//
+//	return
+//}
 
 func (o LocalStorage) Get(objectKey string) (content io.ReadCloser, err error) {
 	filePath, err := o.AbsPath(objectKey)
