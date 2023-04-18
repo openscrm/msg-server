@@ -13,13 +13,14 @@
 > 此项目为OpenSCRM **会话存档服务** 项目
 
 ### 如何安装
+### 重要提示！！！
+由于依赖腾讯官方.so文件，仅支持Linux下编译，windows下可使用wsl2
 #### 设置环境变量
 ```bash
 export LD_LIBRARY_PATH=$(pwd)/lib
 export GOPROXY=https://proxy.golang.com.cn,direct
 ```
 - 复制粘贴api-server的配置
-- 由于依赖腾讯官方.so文件，仅支持Linux下编译，windows下可使用wsl2
 - 编译
 ```bash
 CGO_ENABLED=1 go build -o msg-arch-server main.go

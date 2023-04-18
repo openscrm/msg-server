@@ -4,7 +4,7 @@ import (
 	"encoding/base64"
 	"msg/conf"
 
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt"
 )
 
 type Claims struct {
